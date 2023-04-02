@@ -25,7 +25,7 @@ class Ui_mainWindow(object):
         self.centralwidget = QtWidgets.QWidget(mainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
-        self.svgWidget = QtSvg.QSvgWidget('Pictures\example0.svg')
+        self.svgWidget = QtSvg.QSvgWidget()
         self.svgWidget.setGeometry(50, 50, 350, 350)
 
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
@@ -885,19 +885,22 @@ class Ui_mainWindow(object):
                 [self.reqButton_20, self.reqButton_21, self.reqButton_22, self.reqButton_23],
                 [self.reqButton_30, self.reqButton_31, self.reqButton_32, self.reqButton_33]
             ]
-            for line in lst:
+
+            self.svgWidget.show()
+            for x, line in enumerate(lst):
                 for but in range(4):
                     lst_all[line][but].setText('0')
                     lst_all[line][but].setStyleSheet("background-color: green; color: white;")
                     lst_req[line][but].setText('0')
                     lst_req[line][but].setStyleSheet("background-color: green; color: white;")
+                    
+                    dwg = drawer.draw(draw1[x], draw2[x])
+                    dwg.saveas(f"Pictures/example{x}.svg")
+                    self.svgWidget.load(f"Pictures/example{x}.svg")
+                    
                     loop = QEventLoop()
                     QTimer.singleShot(1000, loop.quit)
                     loop.exec()
-            for x in range(rest):
-                dwg = drawer.draw(draw1[x], draw2[x])
-                dwg.saveas(f"C:/Users/User/Pictures/example{x}.svg")
-
         update_str()
 
 
