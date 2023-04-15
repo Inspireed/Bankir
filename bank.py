@@ -19,14 +19,16 @@ with open("config.json") as f:
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         mainWindow.setObjectName("mainWindow")
-        mainWindow.resize(1000, 700)
+        mainWindow.resize(900, 800)
+        mainWindow.setGeometry(400, 120, 1020, 800)
         mainWindow.setLayoutDirection(QtCore.Qt.RightToLeft)
         mainWindow.setStyleSheet("background-color: rgb(216, 218, 255);")
         self.centralwidget = QtWidgets.QWidget(mainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
         self.svgWidget = QtSvg.QSvgWidget()
-        self.svgWidget.setGeometry(50, 50, 350, 350)
+        self.svgWidget.setGeometry(1010, 540, 410, 380)
+        self.svgWidget.setWindowTitle("Граф")
 
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
         self.label_3.setGeometry(QtCore.QRect(740, 20, 261, 31))
@@ -57,7 +59,12 @@ class Ui_mainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(14)
         self.startButton.setFont(font)
-        self.startButton.setStyleSheet("background-color: rgb(0, 255, 0);")
+        self.startButton.setStyleSheet("background-color: rgb(152, 251, 152);"
+                                       "border-style: outset;"
+                                       "border-width: 2px;"
+                                       "border-radius: 10px;"
+                                       "border-color: rgb(0, 0, 0);")
+        #self.startButton.setStyleSheet("border-width: 2px; border-radius: 10px")
         self.startButton.setObjectName("startButton")
         self.label_6 = QtWidgets.QLabel(self.centralwidget)
         self.label_6.setGeometry(QtCore.QRect(400, 20, 311, 31))
@@ -685,67 +692,49 @@ class Ui_mainWindow(object):
         self.statusbar.setObjectName("statusbar")
         mainWindow.setStatusBar(self.statusbar)
 
+        self.cur_alloc = [
+            [self.allButton_00, self.allButton_01, self.allButton_02, self.allButton_03],
+            [self.allButton_10, self.allButton_11, self.allButton_12, self.allButton_13],
+            [self.allButton_20, self.allButton_21, self.allButton_22, self.allButton_23],
+            [self.allButton_30, self.allButton_31, self.allButton_32, self.allButton_33],
+        ]
+
+        self.mx_nd = [
+            [self.maxButton_00, self.maxButton_01, self.maxButton_02, self.maxButton_03],
+            [self.maxButton_10, self.maxButton_11, self.maxButton_12, self.maxButton_13],
+            [self.maxButton_20, self.maxButton_21, self.maxButton_22, self.maxButton_23],
+            [self.maxButton_30, self.maxButton_31, self.maxButton_32, self.maxButton_33],
+        ]
+
+        self.cur_req = [
+            [self.reqButton_00, self.reqButton_01, self.reqButton_02, self.reqButton_03],
+            [self.reqButton_10, self.reqButton_11, self.reqButton_12, self.reqButton_13],
+            [self.reqButton_20, self.reqButton_21, self.reqButton_22, self.reqButton_23],
+            [self.reqButton_30, self.reqButton_31, self.reqButton_32, self.reqButton_33],
+        ]
+
         self.retranslateUi(mainWindow)
         QtCore.QMetaObject.connectSlotsByName(mainWindow)
 
         self.startButton.clicked.connect(self.start)
 
-        self.allButton_00.clicked.connect(lambda ch, btn=self.allButton_00: self.click_me(btn))
-        self.allButton_01.clicked.connect(lambda ch, btn=self.allButton_01: self.click_me(btn))
-        self.allButton_02.clicked.connect(lambda ch, btn=self.allButton_02: self.click_me(btn))
-        self.allButton_03.clicked.connect(lambda ch, btn=self.allButton_03: self.click_me(btn))
-        self.allButton_10.clicked.connect(lambda ch, btn=self.allButton_10: self.click_me(btn))
-        self.allButton_11.clicked.connect(lambda ch, btn=self.allButton_11: self.click_me(btn))
-        self.allButton_12.clicked.connect(lambda ch, btn=self.allButton_12: self.click_me(btn))
-        self.allButton_13.clicked.connect(lambda ch, btn=self.allButton_13: self.click_me(btn))
-        self.allButton_20.clicked.connect(lambda ch, btn=self.allButton_20: self.click_me(btn))
-        self.allButton_21.clicked.connect(lambda ch, btn=self.allButton_21: self.click_me(btn))
-        self.allButton_22.clicked.connect(lambda ch, btn=self.allButton_22: self.click_me(btn))
-        self.allButton_23.clicked.connect(lambda ch, btn=self.allButton_23: self.click_me(btn))
-        self.allButton_30.clicked.connect(lambda ch, btn=self.allButton_30: self.click_me(btn))
-        self.allButton_31.clicked.connect(lambda ch, btn=self.allButton_31: self.click_me(btn))
-        self.allButton_32.clicked.connect(lambda ch, btn=self.allButton_32: self.click_me(btn))
-        self.allButton_33.clicked.connect(lambda ch, btn=self.allButton_33: self.click_me(btn))
+        for lst1 in self.cur_alloc:
+            for j in range(4):
+                lst1[j].clicked.connect(lambda ch, btn=lst1[j]: self.click_me(btn))
 
-        self.maxButton_00.clicked.connect(lambda ch, btn=self.maxButton_00: self.click_me(btn))
-        self.maxButton_01.clicked.connect(lambda ch, btn=self.maxButton_01: self.click_me(btn))
-        self.maxButton_02.clicked.connect(lambda ch, btn=self.maxButton_02: self.click_me(btn))
-        self.maxButton_03.clicked.connect(lambda ch, btn=self.maxButton_03: self.click_me(btn))
-        self.maxButton_10.clicked.connect(lambda ch, btn=self.maxButton_10: self.click_me(btn))
-        self.maxButton_11.clicked.connect(lambda ch, btn=self.maxButton_11: self.click_me(btn))
-        self.maxButton_12.clicked.connect(lambda ch, btn=self.maxButton_12: self.click_me(btn))
-        self.maxButton_13.clicked.connect(lambda ch, btn=self.maxButton_13: self.click_me(btn))
-        self.maxButton_20.clicked.connect(lambda ch, btn=self.maxButton_20: self.click_me(btn))
-        self.maxButton_21.clicked.connect(lambda ch, btn=self.maxButton_21: self.click_me(btn))
-        self.maxButton_22.clicked.connect(lambda ch, btn=self.maxButton_22: self.click_me(btn))
-        self.maxButton_23.clicked.connect(lambda ch, btn=self.maxButton_23: self.click_me(btn))
-        self.maxButton_30.clicked.connect(lambda ch, btn=self.maxButton_30: self.click_me(btn))
-        self.maxButton_31.clicked.connect(lambda ch, btn=self.maxButton_31: self.click_me(btn))
-        self.maxButton_32.clicked.connect(lambda ch, btn=self.maxButton_32: self.click_me(btn))
-        self.maxButton_33.clicked.connect(lambda ch, btn=self.maxButton_33: self.click_me(btn))
+        for lst2 in self.mx_nd:
+            for j in range(4):
+                lst2[j].clicked.connect(lambda ch, btn=lst2[j]: self.click_me(btn))
 
-        self.reqButton_00.clicked.connect(lambda ch, btn=self.reqButton_00: self.click_me(btn))
-        self.reqButton_01.clicked.connect(lambda ch, btn=self.reqButton_01: self.click_me(btn))
-        self.reqButton_02.clicked.connect(lambda ch, btn=self.reqButton_02: self.click_me(btn))
-        self.reqButton_03.clicked.connect(lambda ch, btn=self.reqButton_03: self.click_me(btn))
-        self.reqButton_10.clicked.connect(lambda ch, btn=self.reqButton_10: self.click_me(btn))
-        self.reqButton_11.clicked.connect(lambda ch, btn=self.reqButton_11: self.click_me(btn))
-        self.reqButton_12.clicked.connect(lambda ch, btn=self.reqButton_12: self.click_me(btn))
-        self.reqButton_13.clicked.connect(lambda ch, btn=self.reqButton_13: self.click_me(btn))
-        self.reqButton_20.clicked.connect(lambda ch, btn=self.reqButton_20: self.click_me(btn))
-        self.reqButton_21.clicked.connect(lambda ch, btn=self.reqButton_21: self.click_me(btn))
-        self.reqButton_22.clicked.connect(lambda ch, btn=self.reqButton_22: self.click_me(btn))
-        self.reqButton_23.clicked.connect(lambda ch, btn=self.reqButton_23: self.click_me(btn))
-        self.reqButton_30.clicked.connect(lambda ch, btn=self.reqButton_30: self.click_me(btn))
-        self.reqButton_31.clicked.connect(lambda ch, btn=self.reqButton_31: self.click_me(btn))
-        self.reqButton_32.clicked.connect(lambda ch, btn=self.reqButton_32: self.click_me(btn))
-        self.reqButton_33.clicked.connect(lambda ch, btn=self.reqButton_33: self.click_me(btn))
+        for lst3 in self.cur_req:
+            for j in range(4):
+                lst3[j].clicked.connect(lambda ch, btn=lst3[j]: self.click_me(btn))
 
     def retranslateUi(self, mainWindow):
         _translate = QtCore.QCoreApplication.translate
         mainWindow.setWindowTitle(_translate("mainWindow", "BankirAlgorithm"))
         self.label_3.setText(_translate("mainWindow", "Запрос на ресурсы"))
-        self.label_28.setText(_translate("mainWindow", "Граф распределения ресурсов"))
+        #self.label_28.setText(_translate("mainWindow", "Граф распределения ресурсов"))
 
         self.startButton.setText(_translate("mainWindow", "START"))
         self.label_6.setText(_translate("mainWindow", "Максимальная потребность"))
@@ -859,49 +848,90 @@ class Ui_mainWindow(object):
         return to_int(currently_allocated), to_int(max_need), to_int(currently_request)
 
     def start(self):
-        currently_allocated, max_need, currently_request = self.read_buttons()
-        allocated = [0] * resources
-        for i in range(processes):
-            for j in range(resources):
-                allocated[j] += currently_allocated[i][j]
-        available = [max_resources[i] - allocated[i] for i in range(resources)]
+        if self.startButton.text() == "START":
+            currently_allocated, max_need, currently_request = self.read_buttons()
+            allocated = [0] * resources
+            for i in range(processes):
+                for j in range(resources):
+                    allocated[j] += currently_allocated[i][j]
+            available = [max_resources[i] - allocated[i] for i in range(resources)]
 
-        lst, lab, seq, draw1, draw2, rest = bankir(processes, resources, max_resources, max_need, currently_allocated,
+            lst, lab, seq, draw1, draw2, rest = bankir(processes, resources, max_resources, max_need, currently_allocated,
                                                    currently_request, available, allocated, sequence, label)
-        drawer = GraphDrawer.GraphDrawer(config)
-        self.label_29.setText(lab)
-        self.label_30.setText(seq)
+            drawer = GraphDrawer.GraphDrawer(config)
+            self.label_29.setText(lab)
+            self.label_30.setText(seq)
+            self.startButton.setStyleSheet("background-color: rgb(191, 10, 78);"
+                                           "border-style: outset;"
+                                           "border-width: 2px;"
+                                           "border-radius: 10px;"
+                                           "border-color: rgb(0, 0, 0);")
+            self.startButton.setText('RESET')
 
-        def update_str():
-            lst_all = [
-                [self.allButton_00, self.allButton_01, self.allButton_02, self.allButton_03],
-                [self.allButton_10, self.allButton_11, self.allButton_12, self.allButton_13],
-                [self.allButton_20, self.allButton_21, self.allButton_22, self.allButton_23],
-                [self.allButton_30, self.allButton_31, self.allButton_32, self.allButton_33]
-            ]
-            lst_req = [
-                [self.reqButton_00, self.reqButton_01, self.reqButton_02, self.reqButton_03],
-                [self.reqButton_10, self.reqButton_11, self.reqButton_12, self.reqButton_13],
-                [self.reqButton_20, self.reqButton_21, self.reqButton_22, self.reqButton_23],
-                [self.reqButton_30, self.reqButton_31, self.reqButton_32, self.reqButton_33]
-            ]
+            def update_str():
+                lst_all = [
+                    [self.allButton_00, self.allButton_01, self.allButton_02, self.allButton_03],
+                    [self.allButton_10, self.allButton_11, self.allButton_12, self.allButton_13],
+                    [self.allButton_20, self.allButton_21, self.allButton_22, self.allButton_23],
+                    [self.allButton_30, self.allButton_31, self.allButton_32, self.allButton_33]
+                ]
+                lst_req = [
+                    [self.reqButton_00, self.reqButton_01, self.reqButton_02, self.reqButton_03],
+                    [self.reqButton_10, self.reqButton_11, self.reqButton_12, self.reqButton_13],
+                    [self.reqButton_20, self.reqButton_21, self.reqButton_22, self.reqButton_23],
+                    [self.reqButton_30, self.reqButton_31, self.reqButton_32, self.reqButton_33]
+                ]
 
-            self.svgWidget.show()
-            for x, line in enumerate(lst):
-                for but in range(4):
-                    lst_all[line][but].setText('0')
-                    lst_all[line][but].setStyleSheet("background-color: green; color: white;")
-                    lst_req[line][but].setText('0')
-                    lst_req[line][but].setStyleSheet("background-color: green; color: white;")
+                self.svgWidget.show()
+                for x, line in enumerate(lst):
+                    for but in range(4):
+                        lst_all[line][but].setText('0')
+                        lst_all[line][but].setStyleSheet("background-color: green; color: white;")
+                        lst_req[line][but].setText('0')
+                        lst_req[line][but].setStyleSheet("background-color: green; color: white;")
                     
-                    dwg = drawer.draw(draw1[x], draw2[x])
-                    dwg.saveas(f"Pictures/example{x}.svg")
-                    self.svgWidget.load(f"Pictures/example{x}.svg")
+                        #dwg = drawer.draw(draw1[x], draw2[x])
+                        #dwg.saveas(f"Pictures/example{x}.svg")
+                        #self.svgWidget.load(f"Pictures/example{x}.svg")
                     
+                        #loop = QEventLoop()
+                        #QTimer.singleShot(1000, loop.quit)
+                        #loop.exec()
+                for y in range(rest):
+                    dwg = drawer.draw(draw1[y], draw2[y])
+                    dwg.saveas(f"Pictures/example{y}.svg")
+                    self.svgWidget.load(f"Pictures/example{y}.svg")
                     loop = QEventLoop()
-                    QTimer.singleShot(1000, loop.quit)
+                    QTimer.singleShot(2000, loop.quit)
                     loop.exec()
-        update_str()
+            update_str()
+        else:
+            for lst1 in self.cur_alloc:
+                for j in range(4):
+                    lst1[j].setText("0")
+                    lst1[j].setStyleSheet("background-color: rgb(214, 214, 214)")
+
+            for lst2 in self.mx_nd:
+                for j in range(4):
+                    lst2[j].setText("0")
+                    lst2[j].setStyleSheet("background-color: rgb(214, 214, 214)")
+
+            for lst3 in self.cur_req:
+                for j in range(4):
+                    lst3[j].setText("0")
+                    lst3[j].setStyleSheet("background-color: rgb(214, 214, 214)")
+
+
+            self.label_29.setText("")
+            self.label_30.setText("")
+            self.startButton.setStyleSheet("background-color: rgb(152, 251, 152);"
+                                           "border-style: outset;"
+                                           "border-width: 2px;"
+                                           "border-radius: 10px;"
+                                           "border-color: rgb(0, 0, 0);")
+            self.startButton.setText('START')
+
+            self.svgWidget.close()
 
 
 if __name__ == "__main__":
