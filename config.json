@@ -18,7 +18,7 @@
       "thickness": 2,
       "color": "#00FF00",
       "loop_color": "#FF0000",
-      "curved": true
+      "curved": false
     }
   },
   "resources": [
