@@ -27,13 +27,13 @@ class Ui_mainWindow(object):
         self.centralwidget = QtWidgets.QWidget(mainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
-        self.img = QtWidgets.QLabel(self.centralwidget)
-        self.img.setGeometry(-60, 680, 300, 100)
+        #self.img = QtWidgets.QLabel(self.centralwidget)
+        #self.img.setGeometry(-60, 680, 300, 100)
 
-        self.pixmap = QPixmap("logoX2.png")
-        self.pixmap1 = self.pixmap.scaledToWidth(70)
-        self.pixmap2 = self.pixmap.scaledToHeight(70)
-        self.img.setPixmap(self.pixmap2)
+        #self.pixmap = QPixmap("logoX2.png")
+        #self.pixmap1 = self.pixmap.scaledToWidth(70)
+        #self.pixmap2 = self.pixmap.scaledToHeight(70)
+        #self.img.setPixmap(self.pixmap2)
 
 
         self.svgWidget = QtSvg.QSvgWidget()

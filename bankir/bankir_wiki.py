@@ -167,64 +167,7 @@ def bankir(processes, resources, max_resources, max_need, currently_allocated, c
             return null_lst, label, sequence, draw_req, draw_all, rest
 
     if safe:
-
-        #print(draw_req)
-        #print(draw_all)
         rest = 5
-
-        # transponir
-        trans_matrix = list(zip(*draw_all))
-        draw_all = [list(row) for row in trans_matrix]
-
-        adj_matrix = {
-            'R1': [],
-            'R2': [],
-            'R3': [],
-            'R4': [],
-            'P1': [],
-            'P2': [],
-            'P3': [],
-            'P4': []
-        }
-        for i in range(4):
-            for j in range(4):
-                if draw_all[i][j] == 1:
-                    adj_matrix[f'R{i + 1}'].append(f'P{j + 1}')
-                if draw_req[i][j] == 1:
-                    adj_matrix[f'P{i + 1}'].append(f'R{j + 1}')
-
-        # удаляем ключи
-        to_remove = [key for key, value in adj_matrix.items() if value == []]
-        for key in to_remove:
-            del adj_matrix[key]
-        # print(adj_matrix)
-
-        graph = nx.DiGraph(adj_matrix)
-
-        cycles = nx.simple_cycles(graph)
-        cyc = []
-
-        # ['P2', 'R1', 'P1', 'R3']
-        for cycle in cycles:
-            cyc += cycle
-
-        # [['P2', 'R1'], ['R1', 'P1'], ['P1', 'R3'], ['R3', 'P2']]
-        cyc.append(cyc[0])
-        cycle_res = [[cyc[i], cyc[i + 1]] for i in range(len(cyc) - 1)]
-        #print(cycle_res)
-
-        for cycl in range(len(cycle_res)):
-            for i in range(4):
-                if f'R{i + 1}' in cycle_res[cycl][0]:
-                    for j in range(4):
-                        if f'P{j + 1}' in cycle_res[cycl][1]:
-                            draw_all[i][j] = -1
-                if f'P{i + 1}' in cycle_res[cycl][0]:
-                    for k in range(4):
-                        if f'R{k + 1}' in cycle_res[cycl][1]:
-                            draw_req[i][k] = -1
-        print(draw_all)
-        print(draw_req)
         return null_lst, label, sequence, draw_req, draw_all, rest
 
 
