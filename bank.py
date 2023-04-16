@@ -6,6 +6,7 @@ import json
 import GraphDrawer
 import time
 from PyQt5.QtCore import QTimer, QEventLoop
+from PyQt5.QtGui import QPixmap
 
 processes = 4
 resources = 4
@@ -22,9 +23,18 @@ class Ui_mainWindow(object):
         mainWindow.resize(900, 800)
         mainWindow.setGeometry(400, 120, 1020, 800)
         mainWindow.setLayoutDirection(QtCore.Qt.RightToLeft)
-        mainWindow.setStyleSheet("background-color: rgb(216, 218, 255);")
+        mainWindow.setStyleSheet("background-color: rgb(51, 153, 153);")
         self.centralwidget = QtWidgets.QWidget(mainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
+        self.img = QtWidgets.QLabel(self.centralwidget)
+        self.img.setGeometry(-60, 680, 300, 100)
+
+        self.pixmap = QPixmap("logoX2.png")
+        self.pixmap1 = self.pixmap.scaledToWidth(70)
+        self.pixmap2 = self.pixmap.scaledToHeight(70)
+        self.img.setPixmap(self.pixmap2)
+
 
         self.svgWidget = QtSvg.QSvgWidget()
         self.svgWidget.setGeometry(1010, 540, 410, 380)
@@ -733,11 +743,15 @@ class Ui_mainWindow(object):
     def retranslateUi(self, mainWindow):
         _translate = QtCore.QCoreApplication.translate
         mainWindow.setWindowTitle(_translate("mainWindow", "BankirAlgorithm"))
+        self.label_29.setStyleSheet("color: rgb(51, 0, 51); font: bold")
+        self.label_30.setStyleSheet("color: rgb(51, 0, 51)")
+
         self.label_3.setText(_translate("mainWindow", "Запрос на ресурсы"))
-        #self.label_28.setText(_translate("mainWindow", "Граф распределения ресурсов"))
+        self.label_3.setStyleSheet("color: rgb(51, 0, 51)")
 
         self.startButton.setText(_translate("mainWindow", "START"))
         self.label_6.setText(_translate("mainWindow", "Максимальная потребность"))
+        self.label_6.setStyleSheet("color: rgb(51, 0, 51)")
         self.label_34.setText(_translate("mainWindow", "R3"))
         self.label_16.setText(_translate("mainWindow", "P4"))
         self.label_35.setText(_translate("mainWindow", "R4"))
@@ -763,6 +777,7 @@ class Ui_mainWindow(object):
         self.allButton_30.setText(_translate("mainWindow", "0"))
         self.label_18.setText(_translate("mainWindow", "P1"))
         self.label_4.setText(_translate("mainWindow", "Выделено ресурсов"))
+        self.label_4.setStyleSheet("color: rgb(51, 0, 51)")
         self.label_38.setText(_translate("mainWindow", "R4"))
         self.maxButton_03.setText(_translate("mainWindow", "0"))
         self.maxButton_02.setText(_translate("mainWindow", "0"))
@@ -857,7 +872,7 @@ class Ui_mainWindow(object):
             available = [max_resources[i] - allocated[i] for i in range(resources)]
 
             lst, lab, seq, draw1, draw2, rest = bankir(processes, resources, max_resources, max_need, currently_allocated,
-                                                   currently_request, available, allocated, sequence, label)
+                                                       currently_request, available, allocated, sequence, label)
             drawer = GraphDrawer.GraphDrawer(config)
             self.label_29.setText(lab)
             self.label_30.setText(seq)
