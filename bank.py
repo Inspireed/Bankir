@@ -78,7 +78,7 @@ class Ui_mainWindow(object):
         self.label_30.setObjectName("label_30")
 
         self.nextButton = QtWidgets.QPushButton(self.centralwidget)
-        self.nextButton.setGeometry(QtCore.QRect(220, 360, 100, 51))
+        self.nextButton.setGeometry(QtCore.QRect(320, 360, 100, 51))
         font = QtGui.QFont()
         font.setPointSize(14)
         self.nextButton.setFont(font)
@@ -89,6 +89,19 @@ class Ui_mainWindow(object):
                                        "border-color: rgb(0, 0, 0);")
         self.nextButton.setObjectName("nextButton")
         self.nextButton.setVisible(False)
+
+        self.backButton = QtWidgets.QPushButton(self.centralwidget)
+        self.backButton.setGeometry(QtCore.QRect(220, 360, 100, 51))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.backButton.setFont(font)
+        self.backButton.setStyleSheet("background-color: rgb(0, 102, 255);"
+                                      "border-style: outset;"
+                                      "border-width: 2px;"
+                                      "border-radius: 10px;"
+                                      "border-color: rgb(0, 0, 0);")
+        self.backButton.setObjectName("backButton")
+        self.backButton.setVisible(False)
 
         self.startButton = QtWidgets.QPushButton(self.centralwidget)
         self.startButton.setGeometry(QtCore.QRect(60, 360, 151, 51))
@@ -754,7 +767,7 @@ class Ui_mainWindow(object):
 
         self.startButton.clicked.connect(self.start)
 
-        self.nextButton.clicked.connect(self.nextButton())
+        # self.nextButton.clicked.connect(self.nextButton())
 
         for lst1 in self.cur_alloc:
             for j in range(4):
@@ -778,6 +791,7 @@ class Ui_mainWindow(object):
         self.label_3.setStyleSheet("color: rgb(51, 0, 51)")
 
         self.nextButton.setText(_translate("mainWindow", "next ▶"))
+        self.backButton.setText(_translate("mainWindow", "◀ back"))
 
         self.startButton.setText(_translate("mainWindow", "START"))
         self.label_6.setText(_translate("mainWindow", "Максимальная потребность"))
@@ -895,6 +909,7 @@ class Ui_mainWindow(object):
 
     def start(self):
         if self.startButton.text() == "START":
+            lst_of_sec = []
             currently_allocated, max_need, currently_request = self.read_buttons()
             allocated = [0] * resources
             for i in range(processes):
@@ -903,16 +918,16 @@ class Ui_mainWindow(object):
             available = [max_resources[i] - allocated[i] for i in range(resources)]
 
             lst, lab, seq, draw1, draw2, rest, lst_of_sec = bankir(processes, resources, max_resources, max_need, currently_allocated,
-                                                       currently_request, available, allocated, sequence, label)
+                                                       currently_request, available, allocated, sequence, label, lst_of_sec)
             drawer = GraphDrawer.GraphDrawer(config)
             for x in range(rest):
                 dwg = drawer.draw(draw1[x], draw2[x])
                 dwg.saveas(f"Pictures/example{x}.svg")
             self.svg_widget.load('Pictures/example0.svg')
-            # Появление кнопки next (если 1, то нет смысла)
+            # Появление кнопки next, back (если 1, то нет смысла)
             if rest == 5:
                 self.nextButton.setVisible(True)
-
+                self.backButton.setVisible(True)
 
             self.label_29.setText(lab)
             self.label_30.setText(seq)
@@ -973,13 +988,14 @@ class Ui_mainWindow(object):
                                            "border-color: rgb(0, 0, 0);")
             self.startButton.setText('START')
             self.nextButton.setVisible(False)
+            self.backButton.setVisible(False)
 
-    def next_click(lst_of_sec):
-        if len(lst_of_sec) > 0:
-            first_element = lst_of_sec.pop(0)
-            print(first_element)
-        else:
-            print('Список пуст')
+    # def next_click(self):
+    #     if len(lst_of_sec) > 0:
+    #         first_element = lst_of_sec.pop(0)
+    #         print(first_element)
+    #     else:
+    #         print('Список пуст')
 
 
 if __name__ == "__main__":

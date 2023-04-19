@@ -25,7 +25,7 @@ def main():
             allocated[j] += currently_allocated[i][j]
     available = [max_resources[i] - allocated[i] for i in range(resources)]
 
-    bankir(processes, resources, max_resources, max_need, currently_allocated, currently_request, available, allocated, sequence, label)
+    bankir(processes, resources, max_resources, max_need, currently_allocated, currently_request, available, allocated, sequence, label, lst_of_sec)
 
 
 def bankir(processes, resources, max_resources, max_need, currently_allocated, currently_request, available, allocated, sequence, label, lst_of_sec):
