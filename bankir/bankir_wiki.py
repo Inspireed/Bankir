@@ -7,6 +7,7 @@ def main():
     max_resources = [1, 1, 1, 1]
     label = 'Безопасная последовательность:'
     sequence = ""
+    lst_of_sec = []
 
     print("\n-- maximum resources for each process --")
     max_need = [[int(i) for i in input(f"process {j + 1} : ").split()] for j in range(processes)]
@@ -27,7 +28,7 @@ def main():
     bankir(processes, resources, max_resources, max_need, currently_allocated, currently_request, available, allocated, sequence, label)
 
 
-def bankir(processes, resources, max_resources, max_need, currently_allocated, currently_request, available, allocated, sequence, label):
+def bankir(processes, resources, max_resources, max_need, currently_allocated, currently_request, available, allocated, sequence, label, lst_of_sec):
     rest = 1
     draw_req = []
     draw_all = []
@@ -104,6 +105,7 @@ def bankir(processes, resources, max_resources, max_need, currently_allocated, c
                         #     currently_request[i][n] == 0
 
                         print(f"Процесс {i + 1} выполнен")
+                        lst_of_sec.append(i + 1)
                         print("выделено ресурсов:")
                         [print(*currently_allocated[i]) for i in range(4)]
                         print("запрос на ресурсы:")
@@ -182,11 +184,11 @@ def bankir(processes, resources, max_resources, max_need, currently_allocated, c
                             if f'R{k + 1}' in cycle_res[cycl][1]:
                                 draw_req[0][i][k] = -1
             #print(draw_req)
-            return null_lst, label, sequence, draw_req, draw_all, rest
+            return null_lst, label, sequence, draw_req, draw_all, rest, lst_of_sec
 
     if safe:
         rest = 5
-        return null_lst, label, sequence, draw_req, draw_all, rest
+        return null_lst, label, sequence, draw_req, draw_all, rest, lst_of_sec
 
 
 if __name__ == "__main__":

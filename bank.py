@@ -1,4 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtSvg import QSvgWidget, QSvgRenderer
+
 from bankir import bankir
 from PyQt5.QtWidgets import *
 from PyQt5 import QtGui, QtSvg
@@ -16,6 +18,8 @@ sequence = ""
 with open("config.json") as f:
     config = json.load(f)
 
+lst_of_sec = []
+
 
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
@@ -28,17 +32,25 @@ class Ui_mainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
 
         #self.img = QtWidgets.QLabel(self.centralwidget)
-        #self.img.setGeometry(-60, 680, 300, 100)
+        #self.img.setGeometry(1010, 540, 410, 380)
 
         #self.pixmap = QPixmap("logoX2.png")
         #self.pixmap1 = self.pixmap.scaledToWidth(70)
         #self.pixmap2 = self.pixmap.scaledToHeight(70)
         #self.img.setPixmap(self.pixmap2)
 
+        self.svg_widget = QSvgWidget(self.centralwidget)
 
-        self.svgWidget = QtSvg.QSvgWidget()
-        self.svgWidget.setGeometry(1010, 540, 410, 380)
-        self.svgWidget.setWindowTitle("Граф")
+        self.svg_widget.setGeometry(400, 320, 500, 450)
+
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.svg_widget)
+
+
+
+        # self.svgWidget = QtSvg.QSvgWidget()
+        # self.svgWidget.setGeometry(1010, 540, 410, 380)
+        # self.svgWidget.setWindowTitle("Граф")
 
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
         self.label_3.setGeometry(QtCore.QRect(740, 20, 261, 31))
@@ -53,17 +65,31 @@ class Ui_mainWindow(object):
         self.label_28.setFont(font)
         self.label_28.setObjectName("label_28")
         self.label_29 = QtWidgets.QLabel(self.centralwidget)
-        self.label_29.setGeometry(QtCore.QRect(20, 440, 531, 41))
+        self.label_29.setGeometry(QtCore.QRect(20, 440, 431, 41))
         font = QtGui.QFont()
         font.setPointSize(11)
         self.label_29.setFont(font)
         self.label_29.setObjectName("label_29")
         self.label_30 = QtWidgets.QLabel(self.centralwidget)
-        self.label_30.setGeometry(QtCore.QRect(20, 480, 531, 41))
+        self.label_30.setGeometry(QtCore.QRect(20, 480, 431, 41))
         font = QtGui.QFont()
         font.setPointSize(15)
         self.label_30.setFont(font)
         self.label_30.setObjectName("label_30")
+
+        self.nextButton = QtWidgets.QPushButton(self.centralwidget)
+        self.nextButton.setGeometry(QtCore.QRect(220, 360, 100, 51))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.nextButton.setFont(font)
+        self.nextButton.setStyleSheet("background-color: rgb(0, 102, 255);"
+                                       "border-style: outset;"
+                                       "border-width: 2px;"
+                                       "border-radius: 10px;"
+                                       "border-color: rgb(0, 0, 0);")
+        self.nextButton.setObjectName("nextButton")
+        self.nextButton.setVisible(False)
+
         self.startButton = QtWidgets.QPushButton(self.centralwidget)
         self.startButton.setGeometry(QtCore.QRect(60, 360, 151, 51))
         font = QtGui.QFont()
@@ -728,6 +754,8 @@ class Ui_mainWindow(object):
 
         self.startButton.clicked.connect(self.start)
 
+        self.nextButton.clicked.connect(self.nextButton())
+
         for lst1 in self.cur_alloc:
             for j in range(4):
                 lst1[j].clicked.connect(lambda ch, btn=lst1[j]: self.click_me(btn))
@@ -748,6 +776,8 @@ class Ui_mainWindow(object):
 
         self.label_3.setText(_translate("mainWindow", "Запрос на ресурсы"))
         self.label_3.setStyleSheet("color: rgb(51, 0, 51)")
+
+        self.nextButton.setText(_translate("mainWindow", "next ▶"))
 
         self.startButton.setText(_translate("mainWindow", "START"))
         self.label_6.setText(_translate("mainWindow", "Максимальная потребность"))
@@ -862,6 +892,7 @@ class Ui_mainWindow(object):
 
         return to_int(currently_allocated), to_int(max_need), to_int(currently_request)
 
+
     def start(self):
         if self.startButton.text() == "START":
             currently_allocated, max_need, currently_request = self.read_buttons()
@@ -871,9 +902,18 @@ class Ui_mainWindow(object):
                     allocated[j] += currently_allocated[i][j]
             available = [max_resources[i] - allocated[i] for i in range(resources)]
 
-            lst, lab, seq, draw1, draw2, rest = bankir(processes, resources, max_resources, max_need, currently_allocated,
+            lst, lab, seq, draw1, draw2, rest, lst_of_sec = bankir(processes, resources, max_resources, max_need, currently_allocated,
                                                        currently_request, available, allocated, sequence, label)
             drawer = GraphDrawer.GraphDrawer(config)
+            for x in range(rest):
+                dwg = drawer.draw(draw1[x], draw2[x])
+                dwg.saveas(f"Pictures/example{x}.svg")
+            self.svg_widget.load('Pictures/example0.svg')
+            # Появление кнопки next (если 1, то нет смысла)
+            if rest == 5:
+                self.nextButton.setVisible(True)
+
+
             self.label_29.setText(lab)
             self.label_30.setText(seq)
             self.startButton.setStyleSheet("background-color: rgb(191, 10, 78);"
@@ -897,28 +937,15 @@ class Ui_mainWindow(object):
                     [self.reqButton_30, self.reqButton_31, self.reqButton_32, self.reqButton_33]
                 ]
 
-                self.svgWidget.show()
-                for x, line in enumerate(lst):
-                    for but in range(4):
-                        lst_all[line][but].setText('0')
-                        lst_all[line][but].setStyleSheet("background-color: green; color: white;")
-                        lst_req[line][but].setText('0')
-                        lst_req[line][but].setStyleSheet("background-color: green; color: white;")
-                    
-                        #dwg = drawer.draw(draw1[x], draw2[x])
-                        #dwg.saveas(f"Pictures/example{x}.svg")
-                        #self.svgWidget.load(f"Pictures/example{x}.svg")
-                    
-                        #loop = QEventLoop()
-                        #QTimer.singleShot(1000, loop.quit)
-                        #loop.exec()
-                for y in range(rest):
-                    dwg = drawer.draw(draw1[y], draw2[y])
-                    dwg.saveas(f"Pictures/example{y}.svg")
-                    self.svgWidget.load(f"Pictures/example{y}.svg")
-                    loop = QEventLoop()
-                    QTimer.singleShot(2000, loop.quit)
-                    loop.exec()
+                #процессы становятся зелеными(надо сделать по одной строчке по нажанию кнопки next)
+                #for x, line in enumerate(lst):
+                #    for but in range(4):
+                #        lst_all[line][but].setText('0')
+                #        lst_all[line][but].setStyleSheet("background-color: green; color: white;")
+                #        lst_req[line][but].setText('0')
+                #        lst_req[line][but].setStyleSheet("background-color: green; color: white;")
+
+
             update_str()
         else:
             for lst1 in self.cur_alloc:
@@ -945,8 +972,14 @@ class Ui_mainWindow(object):
                                            "border-radius: 10px;"
                                            "border-color: rgb(0, 0, 0);")
             self.startButton.setText('START')
+            self.nextButton.setVisible(False)
 
-            self.svgWidget.close()
+    def next_click(lst_of_sec):
+        if len(lst_of_sec) > 0:
+            first_element = lst_of_sec.pop(0)
+            print(first_element)
+        else:
+            print('Список пуст')
 
 
 if __name__ == "__main__":
