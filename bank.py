@@ -28,6 +28,7 @@ class Ui_mainWindow(object):
         self._lst = []
         self.lst_of_sec = []
         self.rest = 0
+        self.err = 0
 
     def setupUi(self, mainWindow):
         mainWindow.setObjectName("mainWindow")
@@ -48,7 +49,7 @@ class Ui_mainWindow(object):
 
         self.svg_widget = QSvgWidget(self.centralwidget)
 
-        self.svg_widget.setGeometry(400, 320, 500, 450)
+        self.svg_widget.setGeometry(470, 350, 500, 450)
 
         self.layout = QVBoxLayout()
         self.layout.addWidget(self.svg_widget)
@@ -72,15 +73,15 @@ class Ui_mainWindow(object):
         self.label_28.setFont(font)
         self.label_28.setObjectName("label_28")
         self.label_29 = QtWidgets.QLabel(self.centralwidget)
-        self.label_29.setGeometry(QtCore.QRect(20, 440, 431, 41))
+        self.label_29.setGeometry(QtCore.QRect(20, 440, 470, 51))
         font = QtGui.QFont()
-        font.setPointSize(11)
+        font.setPointSize(12)
         self.label_29.setFont(font)
         self.label_29.setObjectName("label_29")
         self.label_30 = QtWidgets.QLabel(self.centralwidget)
-        self.label_30.setGeometry(QtCore.QRect(20, 480, 431, 41))
+        self.label_30.setGeometry(QtCore.QRect(20, 480, 450, 60))
         font = QtGui.QFont()
-        font.setPointSize(15)
+        font.setPointSize(12)
         self.label_30.setFont(font)
         self.label_30.setObjectName("label_30")
 
@@ -915,15 +916,15 @@ class Ui_mainWindow(object):
 
     def start(self):
         if self.startButton.text() == "START":
-            currently_allocated, max_need, currently_request = self.read_buttons()
+            self.currently_allocated, self.max_need, self.currently_request = self.read_buttons()
             allocated = [0] * resources
             for i in range(processes):
                 for j in range(resources):
-                    allocated[j] += currently_allocated[i][j]
+                    allocated[j] += self.currently_allocated[i][j]
             available = [max_resources[i] - allocated[i] for i in range(resources)]
 
-            self._lst, lab, seq, draw1, draw2, self.rest, self.lst_of_sec = bankir(processes, resources, max_resources, max_need, currently_allocated,
-                                                       currently_request, available, allocated, sequence, label, lst_of_sec)
+            self.err, self.for_prev_all, self.for_prev_req, self.for_prev_max, self._lst, lab, seq, draw1, draw2, self.rest, self.lst_of_sec = bankir(self.err, processes, resources, max_resources, self.max_need, self.currently_allocated,
+                                                       self.currently_request, available, allocated, sequence, label, lst_of_sec)
             drawer = GraphDrawer.GraphDrawer(config)
 
             for x in range(self.rest):
@@ -933,20 +934,36 @@ class Ui_mainWindow(object):
             self._step_count = self.rest
             self._current_step = 0
             self.update_step()
+            self.label_29.setText(lab)
+            self.label_30.setText(seq)
+            self.startButton.setStyleSheet("background-color: rgb(191, 10, 78);"
+                                            "border-style: outset;"
+                                            "border-width: 2px;"
+                                            "border-radius: 10px;"
+                                            "border-color: rgb(0, 0, 0);")
 
-            # Появление кнопки next, back (если 1, то нет смысла)
+            # кнопки в красный
+            print(self.err)
+            if self.err:
+                for x in range(4):
+                    self.cur_alloc[self.err - 1][x].setStyleSheet("background-color: rgb(204, 51, 51);")
+                    self.cur_req[self.err - 1][x].setStyleSheet("background-color: rgb(204, 51, 51);")
+                    self.mx_nd[self.err - 1][x].setStyleSheet("background-color: rgb(204, 51, 51);")
+
+                # Появление кнопки next, back (если 1, то нет смысла)
             if self.rest == 5:
                 self.nextButton.setVisible(True)
                 self.backButton.setVisible(True)
 
-            self.label_29.setText(lab)
-            self.label_30.setText(seq)
-            self.startButton.setStyleSheet("background-color: rgb(191, 10, 78);"
-                                           "border-style: outset;"
-                                           "border-width: 2px;"
-                                           "border-radius: 10px;"
-                                           "border-color: rgb(0, 0, 0);")
+            # self.label_29.setText(lab)
+            # self.label_30.setText(seq)
+            # self.startButton.setStyleSheet("background-color: rgb(191, 10, 78);"
+            #                                "border-style: outset;"
+            #                                "border-width: 2px;"
+            #                                "border-radius: 10px;"
+            #                                "border-color: rgb(0, 0, 0);")
             self.startButton.setText('RESET')
+
         else:
             self._current_step = 0
             self._step_count = 0
@@ -971,28 +988,72 @@ class Ui_mainWindow(object):
             self.label_29.setText("")
             self.label_30.setText("")
             self.startButton.setStyleSheet("background-color: rgb(152, 251, 152);"
-                                           "border-style: outset;"
-                                           "border-width: 2px;"
-                                           "border-radius: 10px;"
-                                           "border-color: rgb(0, 0, 0);")
+                                        "border-style: outset;"
+                                        "border-width: 2px;"
+                                        "border-radius: 10px;"
+                                        "border-color: rgb(0, 0, 0);")
+            self.rest = 0
+            self.err = 0
             self.lst_of_sec = []
             self.startButton.setText('START')
             self.nextButton.setVisible(False)
             self.backButton.setVisible(False)
+        # if self.startButton.text() == "START" and self.err:
+        #     self.currently_allocated, self.max_need, self.currently_request = self.read_buttons()
+        #     allocated = [0] * resources
+        #     for i in range(processes):
+        #         for j in range(resources):
+        #             allocated[j] += self.currently_allocated[i][j]
+        #     available = [max_resources[i] - allocated[i] for i in range(resources)]
+        #
+        #     self.err, self.for_prev_all, self.for_prev_req, self.for_prev_max, self._lst, lab, seq, draw1, draw2, self.rest, self.lst_of_sec = bankir(
+        #         self.err, processes, resources, max_resources, self.max_need, self.currently_allocated,
+        #         self.currently_request, available, allocated, sequence, label, lst_of_sec)
+        #     print(self.err)
+        #     self.label_29.setText(lab)
+        #     self.label_30.setText(seq)
+        #     self.startButton.setStyleSheet("background-color: rgb(191, 10, 78);"
+        #                                    "border-style: outset;"
+        #                                    "border-width: 2px;"
+        #                                    "border-radius: 10px;"
+        #                                    "border-color: rgb(0, 0, 0);")
+        #
+        #     for x in range(4):
+        #         self.cur_alloc[self.err - 1][x].setStyleSheet("background-color: rgb(204, 51, 51);")
+        #         self.cur_req[self.err - 1][x].setStyleSheet("background-color: rgb(204, 51, 51);")
+        #         self.mx_nd[self.err - 1][x].setStyleSheet("background-color: rgb(204, 51, 51);")
+        #     self.startButton.setText('RESET')
+        # elif self.startButton.text() == "RESET" and self.err:
+        #     for lst1 in self.cur_alloc:
+        #         for j in range(4):
+        #             lst1[j].setText("0")
+        #             lst1[j].setStyleSheet("background-color: rgb(214, 214, 214)")
+        #
+        #     for lst2 in self.mx_nd:
+        #         for j in range(4):
+        #             lst2[j].setText("0")
+        #             lst2[j].setStyleSheet("background-color: rgb(214, 214, 214)")
+        #
+        #     for lst3 in self.cur_req:
+        #         for j in range(4):
+        #             lst3[j].setText("0")
+        #             lst3[j].setStyleSheet("background-color: rgb(214, 214, 214)")
+        #     self.label_29.setText("")
+        #     self.label_30.setText("")
+        #     self.startButton.setStyleSheet("background-color: rgb(152, 251, 152);"
+        #                                    "border-style: outset;"
+        #                                    "border-width: 2px;"
+        #                                    "border-radius: 10px;"
+        #                                    "border-color: rgb(0, 0, 0);")
+        #
+        #     self.lst_of_sec = []
+        #     self.rest = 0
+        #     self.err = 0
+        #     self.startButton.setText('START')
+            #self.nextButton.setVisible(False)
+            #self.backButton.setVisible(False)
 
     def update_step(self):
-        lst_all = [
-            [self.allButton_00, self.allButton_01, self.allButton_02, self.allButton_03],
-            [self.allButton_10, self.allButton_11, self.allButton_12, self.allButton_13],
-            [self.allButton_20, self.allButton_21, self.allButton_22, self.allButton_23],
-            [self.allButton_30, self.allButton_31, self.allButton_32, self.allButton_33]
-        ]
-        lst_req = [
-            [self.reqButton_00, self.reqButton_01, self.reqButton_02, self.reqButton_03],
-            [self.reqButton_10, self.reqButton_11, self.reqButton_12, self.reqButton_13],
-            [self.reqButton_20, self.reqButton_21, self.reqButton_22, self.reqButton_23],
-            [self.reqButton_30, self.reqButton_31, self.reqButton_32, self.reqButton_33]
-        ]
 
         # Типа Clamp
         self._current_step = self._step_count - 1 if self._current_step >= self._step_count else \
@@ -1007,31 +1068,37 @@ class Ui_mainWindow(object):
         #     for but in range(4):
         #         lst_all[self.lst_of_sec[self.lst_of_sec[self._current_step - 1]]][but].setStyleSheet("background-color: green; color: white;")
 
-        print(self._current_step)
-        if self.rest == 5 and self._current_step != 0:
-            for but in range(4):
-                lst_all[self.lst_of_seq[self._current_step - 1]][but].setText('0')
-                lst_all[self.lst_of_seq[self._current_step - 1]][but].setStyleSheet("background-color: green; color: white;")
-                lst_req[self.lst_of_seq[self._current_step - 1]][but].setText('0')
-                lst_req[self.lst_of_seq[self._current_step - 1]][but].setStyleSheet("background-color: green; color: white;")
+        # if self.rest == 5 and self._current_step != 0:
+        #     for but in range(4):
+        #         lst_all[self.lst_of_sec[self._current_step - 1]][but].setText('0')
+        #         lst_all[self.lst_of_sec[self._current_step - 1]][but].setStyleSheet("background-color: green; color: white;")
+        #         lst_req[self.lst_of_sec[self._current_step - 1]][but].setText('0')
+        #         lst_req[self.lst_of_sec[self._current_step - 1]][but].setStyleSheet("background-color: green; color: white;")
         self.svg_widget.load(f"Pictures/graph{self._current_step}.svg")
 
         # У вас оптимизация повесилась
 
 
-        # процессы становятся зелеными(надо сделать по одной строчке по нажанию кнопки next)
-        # for x, line in enumerate(self._lst):
-        #     for but in range(4):
-        #         lst_all[line][but].setText('0')
-        #         lst_all[line][but].setStyleSheet("background-color: green; color: white;")
-        #         lst_req[line][but].setText('0')
-        #         lst_req[line][but].setStyleSheet("background-color: green; color: white;")
-
     def next_click(self):
         self._current_step += 1
         self.update_step()
-
+        if self.rest == 5 and self._current_step != 0:
+            for but in range(4):
+                self.cur_alloc[self.lst_of_sec[self._current_step - 1] - 1][but].setText('0')
+                self.cur_alloc[self.lst_of_sec[self._current_step - 1] - 1][but].setStyleSheet("background-color: green; color: white;")
+                self.cur_req[self.lst_of_sec[self._current_step - 1] - 1][but].setText('0')
+                self.cur_req[self.lst_of_sec[self._current_step - 1] - 1][but].setStyleSheet("background-color: green; color: white;")
+                self.mx_nd[self.lst_of_sec[self._current_step - 1] - 1][but].setText('0')
+                self.mx_nd[self.lst_of_sec[self._current_step - 1] - 1][but].setStyleSheet("background-color: green; color: white;")
     def prev_click(self):
+        if self.rest == 5 and self._current_step != 0:
+            for but in range(4):
+                self.cur_alloc[self.lst_of_sec[self._current_step - 1] - 1][but].setText(f'{self.for_prev_all[self.lst_of_sec[self._current_step - 1] - 1][but]}')
+                self.cur_alloc[self.lst_of_sec[self._current_step - 1] - 1][but].setStyleSheet("background-color: lightgray;" if self.for_prev_all[self.lst_of_sec[self._current_step - 1] - 1][but] == 0 else "background-color: gray; color: white;")
+                self.cur_req[self.lst_of_sec[self._current_step - 1] - 1][but].setText(f'{self.for_prev_req[self.lst_of_sec[self._current_step - 1] - 1][but]}')
+                self.cur_req[self.lst_of_sec[self._current_step - 1] - 1][but].setStyleSheet("background-color: lightgray;" if self.for_prev_req[self.lst_of_sec[self._current_step - 1] - 1][but] == 0 else "background-color: gray; color: white;")
+                self.mx_nd[self.lst_of_sec[self._current_step - 1] - 1][but].setText(f'{self.for_prev_max[self.lst_of_sec[self._current_step - 1] - 1][but]}')
+                self.mx_nd[self.lst_of_sec[self._current_step - 1] - 1][but].setStyleSheet("background-color: lightgray;" if self.for_prev_max[self.lst_of_sec[self._current_step - 1] - 1][but] == 0 else "background-color: gray; color: white;")
         self._current_step -= 1
         self.update_step()
 

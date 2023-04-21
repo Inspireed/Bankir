@@ -2,6 +2,7 @@ import copy
 import networkx as nx
 
 def main():
+    err = 0
     processes = 4
     resources = 4
     max_resources = [1, 1, 1, 1]
@@ -25,25 +26,37 @@ def main():
             allocated[j] += currently_allocated[i][j]
     available = [max_resources[i] - allocated[i] for i in range(resources)]
 
-    bankir(processes, resources, max_resources, max_need, currently_allocated, currently_request, available, allocated, sequence, label, lst_of_sec)
+    bankir(err, processes, resources, max_resources, max_need, currently_allocated, currently_request, available, allocated, sequence, label, lst_of_sec)
 
 
-def bankir(processes, resources, max_resources, max_need, currently_allocated, currently_request, available, allocated, sequence, label, lst_of_sec):
+def bankir(err, processes, resources, max_resources, max_need, currently_allocated, currently_request, available, allocated, sequence, label, lst_of_sec):
     rest = 1
     draw_req = []
     draw_all = []
     lst_of_sec = []
     draw_req.append(copy.deepcopy(currently_request))
     draw_all.append(copy.deepcopy(currently_allocated))
-    if_not_safe1 = copy.deepcopy(currently_request)
-    if_not_safe2 = copy.deepcopy(currently_allocated)
-    trans_matrix = list(zip(*if_not_safe2))
-    if_not_safe2 = copy.copy([list(row) for row in trans_matrix])
+    if_not_safe1 = copy.deepcopy(currently_allocated)
+    if_not_safe2 = copy.deepcopy(currently_request)
+    if_not_safe3 = copy.deepcopy(max_need)
+    if_not_safe2_prev = copy.deepcopy(currently_request)
+    trans_matrix = list(zip(*if_not_safe1))
+    if_not_safe1 = copy.copy([list(row) for row in trans_matrix])
 
     null_lst = []
     running = [True] * processes
     safe = False
     count = 4
+    flag = 1
+    for i in range(processes):
+        if flag:
+            for j in range(resources):
+                if currently_request[i][j] > max_need[i][j]:
+                    count = 0
+                    err = i
+                    flag = 0
+        else:
+            break
     while count != 0:
         for i in range(4):
             if running[i]:
@@ -124,8 +137,8 @@ def bankir(processes, resources, max_resources, max_need, currently_allocated, c
             print(label)
             #print(draw_all)
             #print(draw_req)
-            draw_req = [if_not_safe1]
-            draw_all = [if_not_safe2]
+            draw_req = [if_not_safe2]
+            draw_all = [if_not_safe1]
             #print(len(draw_all))
             #print(draw_all)
             rest = 1
@@ -185,7 +198,7 @@ def bankir(processes, resources, max_resources, max_need, currently_allocated, c
                             if f'R{k + 1}' in cycle_res[cycl][1]:
                                 draw_req[0][i][k] = -1
             #print(draw_req)
-            return null_lst, label, sequence, draw_req, draw_all, rest, lst_of_sec
+            return err, if_not_safe1, if_not_safe2_prev, if_not_safe3, null_lst, label, sequence, draw_req, draw_all, rest, lst_of_sec
 
     if safe:
         # transponir
@@ -203,8 +216,12 @@ def bankir(processes, resources, max_resources, max_need, currently_allocated, c
 
         rest = 5
         #print(lst_of_sec)
-        return null_lst, label, sequence, draw_req, draw_all, rest, lst_of_sec
-
-
+        return err, if_not_safe1, if_not_safe2_prev, if_not_safe3, null_lst, label, sequence, draw_req, draw_all, rest, lst_of_sec
+    else:
+        label = "Ошибка:\n"
+        sequence = f"Процесс {err + 1} превысил максимальную\nпотребность!"
+        print(label)
+        rest = 0
+        return err + 1, if_not_safe1, if_not_safe2_prev, if_not_safe3, null_lst, label, sequence, draw_req, draw_all, rest, lst_of_sec
 if __name__ == "__main__":
     main()
