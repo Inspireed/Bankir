@@ -32,6 +32,7 @@ def bankir(processes, resources, max_resources, max_need, currently_allocated, c
     rest = 1
     draw_req = []
     draw_all = []
+    lst_of_sec = []
     draw_req.append(copy.deepcopy(currently_request))
     draw_all.append(copy.deepcopy(currently_allocated))
     if_not_safe1 = copy.deepcopy(currently_request)
@@ -187,7 +188,21 @@ def bankir(processes, resources, max_resources, max_need, currently_allocated, c
             return null_lst, label, sequence, draw_req, draw_all, rest, lst_of_sec
 
     if safe:
+        # transponir
+        transposed_matrix_list = []
+
+        for matrix in draw_all:
+            transposed_matrix = []
+            for i in range(len(matrix[0])):
+                transposed_row = []
+                for row in matrix:
+                    transposed_row.append(row[i])
+                transposed_matrix.append(transposed_row)
+            transposed_matrix_list.append(transposed_matrix)
+        draw_all = copy.copy(transposed_matrix_list)
+
         rest = 5
+        #print(lst_of_sec)
         return null_lst, label, sequence, draw_req, draw_all, rest, lst_of_sec
 
 

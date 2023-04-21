@@ -26,6 +26,8 @@ class Ui_mainWindow(object):
         self._current_step = 0
         self._step_count = 0
         self._lst = []
+        self.lst_of_sec = []
+        self.rest = 0
 
     def setupUi(self, mainWindow):
         mainWindow.setObjectName("mainWindow")
@@ -913,7 +915,6 @@ class Ui_mainWindow(object):
 
     def start(self):
         if self.startButton.text() == "START":
-            lst_of_sec = []
             currently_allocated, max_need, currently_request = self.read_buttons()
             allocated = [0] * resources
             for i in range(processes):
@@ -921,20 +922,20 @@ class Ui_mainWindow(object):
                     allocated[j] += currently_allocated[i][j]
             available = [max_resources[i] - allocated[i] for i in range(resources)]
 
-            self._lst, lab, seq, draw1, draw2, rest, lst_of_sec = bankir(processes, resources, max_resources, max_need, currently_allocated,
+            self._lst, lab, seq, draw1, draw2, self.rest, self.lst_of_sec = bankir(processes, resources, max_resources, max_need, currently_allocated,
                                                        currently_request, available, allocated, sequence, label, lst_of_sec)
             drawer = GraphDrawer.GraphDrawer(config)
 
-            for x in range(rest):
+            for x in range(self.rest):
                 dwg = drawer.draw(draw1[x], draw2[x])
                 dwg.saveas(f"Pictures/graph{x}.svg")
 
-            self._step_count = rest
+            self._step_count = self.rest
             self._current_step = 0
             self.update_step()
 
             # Появление кнопки next, back (если 1, то нет смысла)
-            if rest == 5:
+            if self.rest == 5:
                 self.nextButton.setVisible(True)
                 self.backButton.setVisible(True)
 
@@ -974,24 +975,12 @@ class Ui_mainWindow(object):
                                            "border-width: 2px;"
                                            "border-radius: 10px;"
                                            "border-color: rgb(0, 0, 0);")
+            self.lst_of_sec = []
             self.startButton.setText('START')
             self.nextButton.setVisible(False)
             self.backButton.setVisible(False)
 
     def update_step(self):
-        # Типа Clamp
-        self._current_step = self._step_count - 1 if self._current_step >= self._step_count else \
-            (0 if self._current_step < 0 else self._current_step)
-
-        self.nextButton.setVisible(self._current_step < self._step_count - 1)
-        self.backButton.setVisible(self._current_step > 0 and self._step_count > 0)
-
-        if self._current_step >= self._step_count or self._current_step < 0:
-            return
-
-        self.svg_widget.load(f"Pictures/graph{self._current_step}.svg")
-
-        # У вас оптимизация повесилась
         lst_all = [
             [self.allButton_00, self.allButton_01, self.allButton_02, self.allButton_03],
             [self.allButton_10, self.allButton_11, self.allButton_12, self.allButton_13],
@@ -1005,13 +994,38 @@ class Ui_mainWindow(object):
             [self.reqButton_30, self.reqButton_31, self.reqButton_32, self.reqButton_33]
         ]
 
-        # процессы становятся зелеными(надо сделать по одной строчке по нажанию кнопки next)
-        for x, line in enumerate(self._lst):
+        # Типа Clamp
+        self._current_step = self._step_count - 1 if self._current_step >= self._step_count else \
+            (0 if self._current_step < 0 else self._current_step)
+
+        self.nextButton.setVisible(self._current_step < self._step_count - 1)
+        self.backButton.setVisible(self._current_step > 0 and self._step_count > 0)
+
+        if self._current_step >= self._step_count or self._current_step < 0:
+            return
+        # if self.rest == 5 and self._current_step != 0:
+        #     for but in range(4):
+        #         lst_all[self.lst_of_sec[self.lst_of_sec[self._current_step - 1]]][but].setStyleSheet("background-color: green; color: white;")
+
+        print(self._current_step)
+        if self.rest == 5 and self._current_step != 0:
             for but in range(4):
-                lst_all[line][but].setText('0')
-                lst_all[line][but].setStyleSheet("background-color: green; color: white;")
-                lst_req[line][but].setText('0')
-                lst_req[line][but].setStyleSheet("background-color: green; color: white;")
+                lst_all[self.lst_of_seq[self._current_step - 1]][but].setText('0')
+                lst_all[self.lst_of_seq[self._current_step - 1]][but].setStyleSheet("background-color: green; color: white;")
+                lst_req[self.lst_of_seq[self._current_step - 1]][but].setText('0')
+                lst_req[self.lst_of_seq[self._current_step - 1]][but].setStyleSheet("background-color: green; color: white;")
+        self.svg_widget.load(f"Pictures/graph{self._current_step}.svg")
+
+        # У вас оптимизация повесилась
+
+
+        # процессы становятся зелеными(надо сделать по одной строчке по нажанию кнопки next)
+        # for x, line in enumerate(self._lst):
+        #     for but in range(4):
+        #         lst_all[line][but].setText('0')
+        #         lst_all[line][but].setStyleSheet("background-color: green; color: white;")
+        #         lst_req[line][but].setText('0')
+        #         lst_req[line][but].setStyleSheet("background-color: green; color: white;")
 
     def next_click(self):
         self._current_step += 1
